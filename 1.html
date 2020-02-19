@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .daytime {
+          width: 100%;
+          height: 100vh;
+          background-color: #fff;
+        }
+        .night {
+            width: 100%;
+            height: 100vh;
+            background-color: black;
+        }
+    </style>
+</head>
+<body>
+<!-- <button onclick="buttonpush()">开/关</button> -->
+<button onclick="hideandshow()">文字显示与隐藏</button>
+<div id="app">
+<!-- <p>{{name}}</p> -->
+<!-- <p>{{"知道前端的水有多深吗"}}</p> -->
+
+<!-- 将数组[1,2,3]在页面显示为321样式 -->
+<!-- <p>{{fn1()}}</p> -->
+<!-- <p>{{arr.join("").split("").reverse().join("")}}</p> -->
+
+<!-- <p v-text="name"></p> -->
+<!-- <p v-text= "sy"></p> -->
+<!-- <p v-html= "sy"></p> -->
+
+<!-- 只有一行代码，vue.js会把类名进行切换 -->
+<!-- v-if对类名进行添加与删除,当用户点击开关按钮时，ture的话添加类名，false删除类名 -->
+<!-- <div v-if = "hideMessage" class="daytime"></div> -->
+<!-- <div v-else class="night"></div> -->
+
+<!-- 两行代码，vue.js会对不运行的进行隐藏 -->
+<!-- <div v-show = "hideMessage" class="daytime"></div> -->
+<!-- <div v-show = "!hideMessage" class="night"></div> -->
+
+<!-- 添加一个总标签，方便对P标签进行统一管理 -->
+<!-- 这里用<template></template>标签，特点：标签内容具有隐藏性，不会对页面产生多余的影响 -->
+<template v-if="showMessage">
+<p>2020年是不平凡的一年</p>
+<p>对于94期前端的人尤其不平凡</p>
+<p>因为他们在学vuejs的过程中遇到了老高</p>
+<p>他们可能会因为这一段偶遇改变自己的命运</p>
+</template>
+
+</div>
+
+<script src="./vue.js"></script>
+
+<script>
+
+var vm = new Vue({
+    el: "#app",
+    data: {
+        name: "Hello World",
+        alipay: "支付宝",
+        wechat: "腾讯",
+        msg: "我要成为前端程序员",
+        hideMessage: true,
+        showMessage: false,
+        arr: [1,2,3],
+        sy: `<p style="font-size:20px; color:red ">红色的烟火</p>`
+    },
+    methods: {
+     fn1(){
+
+        // console.log(this.name);
+        // console.log(this.alipay);
+        let arr1 = [...this.arr]
+        return arr1.reverse().join("")
+     },
+     fn2(){
+
+    //    this.fn1()
+       console.log(this.wechat);
+       
+     }
+    }
+})
+   function buttonpush() {
+       //这里直接对hideMessage进行取反 当用户点击开关时，hideMessage属性会发生改变
+       vm.hideMessage = !vm.hideMessage
+   }
+   function hideandshow() {
+       vm.showMessage = !vm.showMessage
+   }
+</script>
+</body>
+</html>
