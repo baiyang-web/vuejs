@@ -14,7 +14,7 @@
 					<el-button plain style="float:right">发送验证码</el-button>
 				</el-form-item>
 
-				<el-form-item prop="cheked">
+				<el-form-item prop="checked">
 					<el-checkbox v-model="loginForm.checked">我已阅读同意用户协议和隐私条款</el-checkbox>
 				</el-form-item>
 

@@ -15,10 +15,17 @@ const routes = [
     name: 'Home',
     component: Home,
     // children二级路由
-    children: [{
+    children: [
+      {
       path:'',  // 什么都不写 默认是 一级路由的地址 '/home'
       component: secondRouter
-    }]
+    },
+    {
+      path: 'comment',
+        // 按需加载
+      component: () => import('@/views/comment')
+    }
+  ]
   },
  {
    path:'/login',

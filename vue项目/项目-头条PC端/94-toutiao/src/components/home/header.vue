@@ -56,14 +56,14 @@ export default {
         const token  = localStorage.getItem("user-token")
         // 获取用户个人信息
         this.$axios({
-            url: "/user/profile",
+            url: "/user/profile"
             // headers里放置请求头参数
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
+            // headers: {
+            //     Authorization: `Bearer ${token}`
+            // }
         }).then(result => {
             // 加载成功 进行赋值
-            this.userInfo = result.data.data
+            this.userInfo = result.data
         })
      }
     }
