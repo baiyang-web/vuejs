@@ -5,7 +5,7 @@
 		<!-- 左侧列 -->
 		<el-col class="left" :span="12">
 			<!-- 添加图标 -->
-			<i class="el-icon-s-fold"></i>
+			<i @click="collapse=!collapse" :class="{'el-icon-s-fold': !collapse, 'el-icon-s-unfold': collapse }"></i>
 			<span>江苏传智播客教育科技股份有限公司</span>
 		</el-col>
 		<!-- 右侧列 -->
@@ -13,11 +13,11 @@
 			<!-- align属性设置垂直对齐方式 justify设置 水平对齐属性 -->
 			<el-row type="flex" justify="end" align="middle">
 			    <!-- <img :src="userInfo.photo" alt=""> -->
-			    <img src="http://img1.imgtn.bdimg.com/it/u=3342336259,3460647712&fm=26&gp=0.jpg" alt="">
+			    <img :src="userInfo.photo" alt="">
 				<!-- 下拉菜单 -->
 				<el-dropdown trigger="click" @command="clickMenu">
 					<!-- <span>{{userInfo.name}}</span> -->
-					<span class="yangshi">白杨</span>
+					<span class="yangshi">{{userInfo.name}}</span>
 					<el-dropdown-menu slot="dropdown">
 						<el-dropdown-item command="info">个人信息</el-dropdown-item>
 						<el-dropdown-item command="git">git地址</el-dropdown-item>
@@ -30,12 +30,21 @@
 </template>
 
 <script>
+import eventBus from  '@/utils/eventBus' // 公共领域监听
 export default {
     data () {
         return {
-            userInfo:{} // 用户个人信息
+            userInfo:{}, // 用户个人信息
+            collapse: false // 开始不是折叠的
         }
     },
+    // 监听data中的数据变化
+     watch: {
+        collapse() {
+            // 此时说明折叠状态变了 通知左侧导航组件
+            eventBus.$emit('changeCollapse') // 触发一个改变折叠状态的事件
+        }
+     },
     methods: {
      clickMenu (command) {
         if (command === "info") {
@@ -50,23 +59,24 @@ export default {
             this.$router.push("/login")
         }
      },
-     // 钩子函数
-     created () {
-        // 取钥匙 token
-        const token  = localStorage.getItem("user-token")
-        // 获取用户个人信息
+     getuserInfo() {
+          // 获取用户个人信息
         this.$axios({
             url: "/user/profile"
-            // headers里放置请求头参数
-            // headers: {
-            //     Authorization: `Bearer ${token}`
-            // }
         }).then(result => {
             // 加载成功 进行赋值
             this.userInfo = result.data
         })
      }
-    }
+    },
+      // 钩子函数
+     created () {
+    //    获取用户个人信息
+       this.getuserInfo()
+       eventBus.$on('updateUser',() => {
+           this.getuserInfo() // 如果有人出发了 updateUser事件 就会进入到该函数
+       })
+     }
 }
 </script>
 

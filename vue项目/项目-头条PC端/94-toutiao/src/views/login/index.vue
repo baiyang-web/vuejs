@@ -81,7 +81,7 @@ export default {
 						// 获取token
 						window.localStorage.setItem(
 							'user-token',
-							result.data.data.token
+							result.data.token
 						)
 						this.$router.push('/home')
 					})

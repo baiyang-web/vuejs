@@ -1,8 +1,9 @@
 <template>
 	<el-container>
-		<el-aside style="width:230px;background:#2e2f32">
+		<!-- 根据折叠状态进行变化 style对象语法 -->
+		<el-aside :style="{width: collapse ? '64px' : '230px'}" style="transition:all 0.3s; background:#2e2f32">
 			<!-- 左侧导航组件 -->
-		<nav-left></nav-left>
+		<nav-left :collapse="collapse"></nav-left>
 		</el-aside>
 		<el-container>
 			<el-header>
@@ -18,9 +19,19 @@
 </template>
 
 <script>
-
+import eventBus from '@/utils/eventBus'
 export default {
-	
+	data() {
+		return {
+			collapse: false // 默认是展开状态
+		}
+	},
+	created() {
+		// 切换折叠状态
+      eventBus.$on('changeCollapse',() => {
+		  this.collapse = !this.collapse // 只要取反 就能和头部的组件的状态对上
+	  })
+	}
 }
 </script>
 
