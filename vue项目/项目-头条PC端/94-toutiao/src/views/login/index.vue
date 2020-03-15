@@ -40,7 +40,7 @@ export default {
 				mobile: [
 					{ required: true, message: '您的手机号不能为空' },
 					{
-						pattern: /^1[3-9]\d{9}$/,
+						pattern: /^1[3-9]\d{9}$/, // pattern 正则表达式
 						message: '您的手机号格式不正确'
 					}
 				],

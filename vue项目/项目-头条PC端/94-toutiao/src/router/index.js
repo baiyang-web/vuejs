@@ -12,7 +12,7 @@ const routes = [
   },
   {
    path: '/',
-   redirect: '/home'
+   redirect: '/home'  // 强制跳转页面
   },
   {
     path: '/home',
