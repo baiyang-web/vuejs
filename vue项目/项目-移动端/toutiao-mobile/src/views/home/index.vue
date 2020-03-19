@@ -2,9 +2,9 @@
   <div class="container">
   <!-- 放置tabs组件 -->
    <van-tabs>
-  <van-tab :title="`标签${item}`" v-for="item in 10" :key="item">
+  <van-tab :title="item.name" v-for="item in channels" :key="item.id">
   <!-- 封装一个article-list组件 -->
-      <article-list></article-list>
+      <article-list :channel_id="item.id"></article-list>
   </van-tab>
 </van-tabs>
 <!-- 在tabs下放置图标 编辑频道的图标 -->
@@ -16,9 +16,25 @@
 
 <script>
 import articlelist from './components/article-list'
+import { getMyChannels } from '@/api/channels'
 export default {
   components: {
     'article-list': articlelist
+  },
+  data () {
+    return {
+      channels: [] // 接收频道数据
+    }
+  },
+  methods: {
+    async  getChannels () {
+      const data = await getMyChannels() // 接收返回的数据结果
+      this.channels = data.channels // 将数据赋值给data中的数据
+    }
+  },
+  created () {
+    // 直接获取频道数据
+    this.getChannels()
   }
 }
 </script>
