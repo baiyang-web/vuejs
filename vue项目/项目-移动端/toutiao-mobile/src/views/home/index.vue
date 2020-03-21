@@ -1,36 +1,119 @@
 <template>
   <div class="container">
   <!-- 放置tabs组件 -->
-   <van-tabs>
+   <van-tabs v-model="activeIndex">
   <van-tab :title="item.name" v-for="item in channels" :key="item.id">
   <!-- 封装一个article-list组件 -->
-      <article-list :channel_id="item.id"></article-list>
+      <article-list :channel_id="item.id" @showAction="openAction"></article-list>
   </van-tab>
 </van-tabs>
 <!-- 在tabs下放置图标 编辑频道的图标 -->
 <span class="bar_btn">
   <van-icon name="wap-nav"></van-icon>
 </span>
+<!-- 放置一个弹层组件 -->
+<van-popup v-model=" showMoreAction" style="width: 80%">
+  <!-- $event 是事件参数 自定义事件中 $event 就是自定义事件传出的第一个参数 -->
+  <more-action @dislike="dislikeOrReport('dislike',$event)" @report="dislikeOrReport('report',$event)"></more-action>
+</van-popup>
   </div>
 </template>
 
 <script>
 import articlelist from './components/article-list'
 import { getMyChannels } from '@/api/channels'
+import moreAction from './components/more-action'
+import { dislikeArticle, reportArticle } from '@/api/articles' // 引入不感兴趣与举报方法
+import eventbus from '@/utils/eventbus' // 公共事件处理器
 export default {
   components: {
-    'article-list': articlelist
+    'article-list': articlelist,
+    'more-action': moreAction
   },
   data () {
     return {
-      channels: [] // 接收频道数据
+      channels: [], // 接收频道数据
+      showMoreAction: false, // 是否显示弹层 默认不显示组件
+      articleId: null, // 用来接收 点击的文章的id
+      activeIndex: 0 // 当前默认激活的页面0
     }
   },
   methods: {
     async  getChannels () {
       const data = await getMyChannels() // 接收返回的数据结果
       this.channels = data.channels // 将数据赋值给data中的数据
+    },
+    // 此方法会在article-list组件触发 showAction的时候 触发
+    openAction (artId) {
+      this.showMoreAction = true // 开启弹层
+      // 存储id
+      this.articleId = artId
+    },
+    // 合并写法 代码重复率较高
+    // operatetype 是操作类型 如果是 dislike就是不感兴趣 如果是 report 就是举报
+    async dislikeOrReport (operateType, type) {
+      // 调用不感兴趣文章接口
+      try {
+        // 三元表达式
+        operateType === 'dislike' ? await dislikeArticle({
+          target: this.articleId // 不感兴趣的id
+        }) : await reportArticle({ target: this.articleId, type }) // 这里的type通过 上面的$event传出来
+        // 下面是成功之后的逻辑
+        this.$bnotify({
+          type: 'success',
+          message: '操作成功'
+        })
+        // this.channels[this.activeIndex].id 是当前激活的频道数据
+        eventbus.$emit('delArticle', this.articleId, this.channels[this.activeIndex].id)
+        // 关闭弹层
+        this.showMoreAction = false
+      } catch (error) {
+        this.$bnotify({
+          message: '操作失败'
+        })
+      }
     }
+    // 不感兴趣文章
+    // async dislike () {
+    //   try {
+    //     if (this.articleId) {
+    //       await dislikeArticle({
+    //         target: this.articleId
+    //       })
+    //       this.$bnotify({
+    //         type: 'success',
+    //         message: '操作成功'
+    //       })
+    //       eventbus.$emit('delArticle', this.articleId, this.channels[this.activeIndex].id)
+    //       // 关闭弹层
+    //       this.showMoreAction = false
+    //     }
+    //   } catch (error) {
+    //     this.$bnotify({
+    //       message: '操作失败'
+    //     })
+    //   }
+    // },
+    // // 举报文章
+    // async reportArticle (type) {
+    //   try {
+    //   // 调用举报文章接口
+    //     await reportArticle({ target: this.articleId, type })
+    //     this.$gnotify({
+    //       type: 'success',
+    //       message: '操作成功'
+    //     })
+    //     // await下方认为举报成功
+    //     // 同样的也要讲举报的文章删除掉
+    //     eventbus.$emit('delArticle', this.articleId, this.channels[this.activeIndex].id)
+    //     this.showMoreAction = false // 此时关闭弹层
+    //   } catch (error) {
+    //     // 默认是红色
+    //     this.$gnotify({
+    //       message: '操作失败'
+    //     })
+    //   }
+    // }
   },
   created () {
     // 直接获取频道数据

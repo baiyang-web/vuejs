@@ -8,3 +8,19 @@ export function getArticles (params) {
     params: { with_top: 1, ...params } // 合并数据
   })
 }
+// 封装一个不感兴趣文章接口
+export function dislikeArticle (data) {
+  return request({
+    url: '/article/dislikes', // 接口地址
+    method: 'post',
+    data // 用来存放body参数
+  })
+}
+// 封装一个举报文章接口
+export function reportArticle (data) {
+  return request({
+    url: '/article/reports', // 接口地址
+    method: 'post',
+    data
+  })
+}

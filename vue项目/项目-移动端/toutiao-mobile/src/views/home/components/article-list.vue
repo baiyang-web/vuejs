@@ -3,40 +3,42 @@
   <div class="scroll-wrapper">
     <!-- 文章列表 -->
     <!-- 放置下拉刷新组件 -->
-    <van-pull-refresh @refresh="onRefresh" v-model="downLoading" :success-text="successText">
-        <van-list finished-text="无" v-model="upLoading" :finished="finished" @load="onLoad"></van-list>
+    <van-pull-refresh v-model="downLoading" @refresh="onRefresh" :success-text="successText">
+        <van-list finished-text="没有新数据" v-model="upLoading" :finished="finished" @load="onLoad" class="info">
       <!-- 这里放置cell单元格组件 -->
       <van-cell-group>
            <!-- item.art_id 此时是一个大数字的对象 v-for 的key需要用字符串或者数字代理 -->
       <van-cell v-for="item in articles" :key="item.art_id.toString()">
       <div class="article_item">
-      <!-- 标题 -->
+         <!-- 标题 -->
               <h3 class="van-ellipsis">{{ item.title }}</h3>
               <!-- 根据当前的封面类型决定显示单图 三图 还是无图 -->
               <!-- 三图图片 -->
               <div class="img_box" v-if="item.cover.type === 3">
                 <!-- 图片组件用的是 vant的组件库中的图片组件 需要使用该组件 进行图片的懒加载 -->
-                <van-image class="w33" fit="cover" :src="item.cover.images[0]" />
-                <van-image class="w33" fit="cover" :src="item.cover.images[1]" />
-                <van-image class="w33" fit="cover" :src="item.cover.images[2]" />
+                <van-image lazy-load class="w33" fit="cover" :src="item.cover.images[0]" />
+                <van-image lazy-load class="w33" fit="cover" :src="item.cover.images[1]" />
+                <van-image lazy-load class="w33" fit="cover" :src="item.cover.images[2]" />
               </div>
               <!-- 单图 暂时隐藏掉单图-->
                <div class="img_box" v-if="item.cover.type === 1">
                  <!-- 单图取第一个 -->
-                <van-image class="w100" fit="cover" :src="item.cover.images[0]" />
+                <van-image lazy-load class="w100" fit="cover" :src="item.cover.images[0]" />
               </div>
               <!-- 作者信息 -->
               <div class="info_box">
                 <span>{{ item.aut_name }}</span>
                 <span>{{ item.comm_count }}评论</span>
-                <span>{{ item.pubdate }}</span>
-                <span class="close">
+                <!-- 使用过滤器 -->
+                <span>{{ item.pubdate | relTime}}</span>
+                <span class="close" v-if="user.token" @click="$emit('showAction', item.art_id.toString())">
                   <van-icon name="cross"></van-icon>
                 </span>
               </div>
       </div>
       </van-cell>
       </van-cell-group>
+      </van-list>
        <!-- 循环内容 -->
     </van-pull-refresh>
   </div>
@@ -44,7 +46,10 @@
 </template>
 
 <script>
+// 引入获取文章模块
 import { getArticles } from '@/api/articles'
+import { mapState } from 'vuex'
+import eventbus from '@/utils/eventbus' // 引入监听事件
 export default {
   data () {
     return {
@@ -85,7 +90,7 @@ export default {
       // 放置休眠函数
       await this.$bsleep()
       const data = await getArticles({ channel_id: this.channel_id, timestamp: Date.now() }) // 永远传最新的时间戳
-      this.downLoading = false
+      this.downLoading = false // 手动关闭下拉刷新状态
       // 判断最新的时间戳能否换来数据 如果能换来数据 就把新数据整个替换旧数据 如果不能 就给个提示 暂时没有更新
       if (data.results.length) {
         // 如果有返回数据 需要将articles数据全部替换
@@ -101,11 +106,37 @@ export default {
         this.successText = '当前已是最新数据'
       }
     }
+  },
+  // 计算属性
+  computed: {
+    ...mapState(['user']) // 将user对象映射到计算属性中
+  },
+  // 初始化函数
+  created () {
+  // 监听删除文章事件
+    eventbus.$on('delArticle', (artId, channelId) => {
+      // 判断传过来的频道是否等于自身的频道
+      if (channelId === this.channel_id) {
+        // 方法findIndex查找索引
+        const index = this.articles.findIndex(item => item.art_id.toString() === artId)
+        if (index > -1) {
+          // 因为下标是从0开始的 所以需要让其大于-1
+          this.articles.splice(index, 1) // 删除对应下标的数据
+        }
+        // 如果把当前页面数据全部删除 重新调用上拉加载方法
+        if (this.articles.length === 0) {
+          this.onLoad()
+        }
+      }
+    })
   }
 }
 </script>
 
 <style lang="less" scoped>
+// .info {
+//   height: 10px;
+// }
 .article_item {
   h3 {
     font-weight: normal;
