@@ -11,7 +11,8 @@
       <van-grid class="van-hairline--left">
           <!-- 循环渲染我的频道 -->
         <van-grid-item v-for="(item,index) in channels" :key="item.id">
-          <span class="f12">{{item.name}}</span>
+            <!-- 点击频道项的时候把当前点击的频道id传出去 也可以传索引 这里用到子传父的方法-->
+          <span class="f12" @click="$emit('selectChannel',index)">{{item.name}}</span>
           <van-icon class="btn" name="cross" v-if="index!==0 && editing"></van-icon>
         </van-grid-item>
       </van-grid>
