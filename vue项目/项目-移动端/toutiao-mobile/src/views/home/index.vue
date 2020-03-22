@@ -16,6 +16,9 @@
   <!-- $event 是事件参数 自定义事件中 $event 就是自定义事件传出的第一个参数 -->
   <more-action @dislike="dislikeOrReport('dislike',$event)" @report="dislikeOrReport('report',$event)"></more-action>
 </van-popup>
+<van-action-sheet :round="false" title="编辑频道">
+
+</van-action-sheet>
   </div>
 </template>
 
