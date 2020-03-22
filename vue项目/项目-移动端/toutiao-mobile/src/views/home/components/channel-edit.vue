@@ -12,7 +12,7 @@
           <!-- 循环渲染我的频道 -->
         <van-grid-item v-for="(item,index) in channels" :key="item.id">
             <!-- 点击频道项的时候把当前点击的频道id传出去 也可以传索引 这里用到子传父的方法-->
-          <span class="f12" @click="$emit('selectChannel',index)">{{item.name}}</span>
+          <span class="f12" @click="$emit('selectChannel',index)" :class="{red: index === activeIndex}">{{item.name}}</span>
           <van-icon class="btn" name="cross" v-if="index!==0 && editing"></van-icon>
         </van-grid-item>
       </van-grid>
@@ -45,6 +45,11 @@ export default {
       required: true, // 代表必须传递
       type: Array, // 类型是数组
       default: () => [] // 返回一个空数组
+    },
+    activeIndex: {
+      required: true,
+      type: Number,
+      default: 0
     }
   },
   methods: {

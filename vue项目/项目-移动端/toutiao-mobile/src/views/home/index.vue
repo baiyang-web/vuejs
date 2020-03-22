@@ -18,7 +18,7 @@
 </van-popup>
 <van-action-sheet :round="false" title="编辑频道" v-model="showChannelEdit">
 <!-- 放置频道组件 -->
-<channel-edit :channels="channels"></channel-edit>
+<channel-edit :channels="channels" @selectChannel="selectChannel" :activeIndex="activeIndex"></channel-edit>
 </van-action-sheet>
   </div>
 </template>
@@ -79,7 +79,7 @@ export default {
           message: '操作失败'
         })
       }
-    }
+    },
     // 不感兴趣文章
     // async dislike () {
     //   try {
@@ -121,6 +121,10 @@ export default {
     //     })
     //   }
     // }
+    selectChannel (index) {
+      this.activeIndex = index // 将对应频道的索引 设置给当前激活的标签
+      this.showChannelEdit = false // 关闭弹层
+    }
   },
   created () {
     // 直接获取频道数据
