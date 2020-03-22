@@ -18,14 +18,14 @@
 </van-popup>
 <van-action-sheet :round="false" title="编辑频道" v-model="showChannelEdit">
 <!-- 放置频道组件 -->
-<channel-edit :channels="channels" @selectChannel="selectChannel" :activeIndex="activeIndex"></channel-edit>
+<channel-edit :channels="channels" @selectChannel="selectChannel" :activeIndex="activeIndex" @delChannel="delChannel"></channel-edit>
 </van-action-sheet>
   </div>
 </template>
 
 <script>
 import articlelist from './components/article-list'
-import { getMyChannels } from '@/api/channels'
+import { getMyChannels, delChannel } from '@/api/channels'
 import moreAction from './components/more-action'
 import { dislikeArticle, reportArticle } from '@/api/articles' // 引入不感兴趣与举报方法
 import eventbus from '@/utils/eventbus' // 公共事件处理器
@@ -124,6 +124,20 @@ export default {
     selectChannel (index) {
       this.activeIndex = index // 将对应频道的索引 设置给当前激活的标签
       this.showChannelEdit = false // 关闭弹层
+    },
+    // 删除频道的方法
+    async delChannel (id) {
+      try {
+        await delChannel(id) // 调用方法 删除缓存中的数据
+        const index = this.channels.findIndex(item => item.id === id) // 找到对应的索引
+        if (index <= this.activeIndex) {
+          this.activeIndex = this.activeIndex - 1
+        }
+        // 找到索引之后 删除对应的频道
+        this.channels.splice(index, 1)
+      } catch (error) {
+        this.$bnotify({ message: '删除频道数据' })
+      }
     }
   },
   created () {
