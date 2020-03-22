@@ -24,7 +24,7 @@
         <van-grid-item v-for="item in optionalChannels" :key="item.id">
           <span class="f12">{{item.name}}</span>
           <!-- btn代表+号图标 注册点击事件 触发自定义事件 并且需要传出一个频道对象 -->
-          <van-icon class="btn" name="plus"></van-icon>
+          <van-icon class="btn" name="plus" @click="$emit('addChannel',item)"></van-icon>
         </van-grid-item>
       </van-grid>
     </div>

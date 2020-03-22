@@ -18,14 +18,19 @@
 </van-popup>
 <van-action-sheet :round="false" title="编辑频道" v-model="showChannelEdit">
 <!-- 放置频道组件 -->
-<channel-edit :channels="channels" @selectChannel="selectChannel" :activeIndex="activeIndex" @delChannel="delChannel"></channel-edit>
+<channel-edit :channels="channels"
+@selectChannel="selectChannel"
+:activeIndex="activeIndex"
+@delChannel="delChannel"
+@addChannel="addChannel"
+></channel-edit>
 </van-action-sheet>
   </div>
 </template>
 
 <script>
 import articlelist from './components/article-list'
-import { getMyChannels, delChannel } from '@/api/channels'
+import { getMyChannels, delChannel, addChannel } from '@/api/channels'
 import moreAction from './components/more-action'
 import { dislikeArticle, reportArticle } from '@/api/articles' // 引入不感兴趣与举报方法
 import eventbus from '@/utils/eventbus' // 公共事件处理器
@@ -138,6 +143,11 @@ export default {
       } catch (error) {
         this.$bnotify({ message: '删除频道数据' })
       }
+    },
+    // 添加频道的方法
+    async addChannel (channel) {
+      await addChannel(channel) // 传入参数 写入缓存
+      this.channels.push(channel) // 从后添加数据
     }
   },
   created () {
