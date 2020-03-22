@@ -141,6 +141,7 @@ export default {
       color: #fff;
     }
   }
+}
 .van-tabs {
   height: 100%;
   display: flex;

@@ -16,11 +16,13 @@
         </van-grid-item>
       </van-grid>
     </div>
+    <!-- 可选频道 -->
     <div class="channel">
       <div class="tit">可选频道：</div>
       <van-grid class="van-hairline--left">
-        <van-grid-item v-for="index in 8" :key="index">
-          <span class="f12">频道{{index}}</span>
+        <van-grid-item v-for="item in optionalChannels" :key="item.id">
+          <span class="f12">{{item.name}}</span>
+          <!-- btn代表+号图标 注册点击事件 触发自定义事件 并且需要传出一个频道对象 -->
           <van-icon class="btn" name="plus"></van-icon>
         </van-grid-item>
       </van-grid>
@@ -29,10 +31,12 @@
 </template>
 
 <script>
+import { getAllChannels } from '@/api/channels'
 export default {
   data () {
     return {
-      editing: false
+      editing: false, // 正在编辑状态 用这个状态来控制是否显示 删除图标
+      allChannels: [] // 定义一个变量 接收全部的数据
     }
   },
   props: {
@@ -40,6 +44,22 @@ export default {
       required: true, // 代表必须传递
       type: Array, // 类型是数组
       default: () => [] // 返回一个空数组
+    }
+  },
+  methods: {
+    async getAll () {
+      const data = await getAllChannels()
+      this.allChannels = data.channels // 直接把频道数据赋值给频道
+    }
+  },
+  created () {
+    this.getAll() // 调用组件方法
+  },
+  // 计算属性
+  computed: {
+    optionalChannels () {
+      // 全部频道 - 我的频道 算出可选频道 o是形参 起什么名都可以
+      return this.allChannels.filter(item => !this.channels.some(o => o.id === item.id))
     }
   }
 }
