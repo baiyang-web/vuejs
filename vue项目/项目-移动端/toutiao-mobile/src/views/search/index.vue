@@ -5,8 +5,8 @@
   <!-- 搜索组件 -->
     <van-search @search="searchMsg" v-model.trim="q" placeholder="请输入搜索关键词" shape="round" />
     <van-cell-group class="suggest-box" v-if="q">
-      <van-cell icon="search">
-        <span>j</span>ava
+      <van-cell @click="toResult(item)" icon="search" v-for="(item,index) in suggestList" :key="index">
+       {{item}}
       </van-cell>
     </van-cell-group>
     <div class="history-box" v-else>
@@ -17,7 +17,7 @@
         <van-icon name="delete" @click="clear"></van-icon>
       </div>
       <van-cell-group>
-        <van-cell @click="toSearchResult(text)" v-for="(item,index) in historyList" :key="index">
+        <van-cell @click="toResult(item)" v-for="(item,index) in historyList" :key="index">
           <a class="word_btn">{{item}}</a>
           <!-- 注册点击删除事件 并阻止默认冒泡事件 -->
           <van-icon @click.stop="delHistory(index)" class="close_btn" slot="right-icon" name="cross" />
@@ -65,10 +65,11 @@ export default {
       // 数据同步到本地
       localStorage.setItem(key, JSON.stringify(this.historyList))
     },
-    // 跳转到搜索结果页
-    toSearchResult (text) {
-      this.$router.push({ path: '/search/result', query: { q: text } })
-    },
+    // 可以用同一个方法 下面的toResult
+    // // 跳转到搜索结果页
+    // toSearchResult (text) {
+    //   this.$router.push({ path: '/search/result', query: { q: text } })
+    // },
     // 清空历史记录
     async clear () {
       try {
@@ -89,6 +90,13 @@ export default {
       this.historyList = [...new Set(this.historyList)] // 去重
       localStorage.setItem(key, JSON.stringify(this.historyList))
       this.$router.push({ path: '/search/result', query: { q: this.q } })
+    },
+    // 跳转到结果页
+    toResult (text) {
+      this.historyList.push(text) // 把点击的记录也加到历史记录中
+      this.historyList = [...new Set(this.historyList)] // 去重
+      localStorage.setItem(key, JSON.stringify(this.historyList))
+      this.$router.push({ path: '/search/result', query: { q: text } })
     }
   },
   // 读取数据
