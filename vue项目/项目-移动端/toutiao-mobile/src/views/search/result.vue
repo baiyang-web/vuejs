@@ -1,23 +1,26 @@
 <template>
 <div class="container">
     <van-nav-bar @click-left="$router.back()" title="搜索结果" left-arrow></van-nav-bar>
-    <van-list>
+    <!-- 放置搜索结果列表 实现上拉加载 -->
+    <van-list v-model="upLoading" :finished="finished" @load="onLoad">
         <van-cell-group>
-          <van-cell>
+            <!-- 文章列表 -->
+          <van-cell v-for="item in articles" :key="item.art_id.toString()">
             <div class="article_item">
-              <h3 class="van-ellipsis">PullRefresh下拉刷新PullRefresh下拉刷新下拉刷新下拉刷新</h3>
-              <div class="img_box">
-                <van-image class="w33" fit="cover" src="https://img.yzcdn.cn/vant/cat.jpeg" />
-                <van-image class="w33" fit="cover" src="https://img.yzcdn.cn/vant/cat.jpeg" />
-                <van-image class="w33" fit="cover" src="https://img.yzcdn.cn/vant/cat.jpeg" />
+              <h3 class="van-ellipsis">{{item.title}}</h3>
+              <div class="img_box" v-if="item.cover.type === 3">
+                <van-image class="w33" fit="cover" :src="item.cover.images[0]" />
+                <van-image class="w33" fit="cover" :src="item.cover.images[1]" />
+                <van-image class="w33" fit="cover" :src="item.cover.images[2]" />
               </div>
               <div class="img_box">
-                <van-image class="w100" fit="cover" src="https://img.yzcdn.cn/vant/cat.jpeg" />
+                <van-image class="w100" fit="cover" :src="item.cover.images[0]" />
               </div>
               <div class="info_box">
-                <span>你像一阵风</span>
-                <span>8评论</span>
-                <span>10分钟前</span>
+                <span>{{ item.aut_name }}</span>
+                <span>{{ item.comm_count }}评论</span>
+                <!-- 用过滤器来处理相对时间 relTime在plugin文件中全局注册-->
+                <span>{{ item.pubdate | relTime }}</span>
               </div>
             </div>
           </van-cell>
@@ -27,8 +30,35 @@
 </template>
 
 <script>
+import { searchArticle } from '@/api/articles'
 export default {
-
+  data () {
+    return {
+      upLoading: false, // 上拉加载状态
+      finished: false, // 表示当前加载是否全部完成
+      articles: [], // 放置搜索文章结果
+      page: {
+        page: 1, // 当前第几页
+        per_page: 10 // 每页显示几条
+      }
+    }
+  },
+  methods: {
+    // 此方法会在滚动条滚动到底部的时候执行
+    async onLoad () {
+      const { q } = this.$route.query // 获取query参数
+      const data = await searchArticle({ ...this.page, q })
+      this.articles.push(...data.results) // 上拉加载触发时 将数据从后添加
+      this.upLoading = false // 手动关闭上拉加载状态
+      // 如果下拉有数据存在
+      if (data.results.length) {
+        this.page.page++ // 有数据把页码切换到下一页
+      } else {
+        // 否则就没有下一页 直接结束
+        this.finished = true
+      }
+    }
+  }
 }
 </script>
 

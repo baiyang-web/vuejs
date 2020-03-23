@@ -31,3 +31,10 @@ export function getSuggestion (params) {
     params // 把query参数放置进去
   })
 }
+// 搜索文章接口
+export function searchArticle (params) {
+  return request({
+    url: '/search',
+    params
+  })
+}
