@@ -24,3 +24,10 @@ export function reportArticle (data) {
     data
   })
 }
+// 获取联想搜索建议接口
+export function getSuggestion (params) {
+  return request({
+    url: '/suggestion', // 搜索建议地址
+    params // 把query参数放置进去
+  })
+}
