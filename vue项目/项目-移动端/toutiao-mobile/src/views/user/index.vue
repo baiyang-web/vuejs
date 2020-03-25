@@ -57,7 +57,7 @@ export default {
   methods: {
     ...mapMutations(['delUser']), // 引入方法
     // 获取用户个人信息
-    async getUser () {
+    async getInfo () {
       this.userInfo = await getUserInfo()
     },
     // 登出操作
@@ -75,7 +75,7 @@ export default {
     }
   },
   created () {
-    this.getUser()
+    this.getInfo()
   }
 }
 </script>
