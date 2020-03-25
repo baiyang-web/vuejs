@@ -23,7 +23,7 @@
       <!-- 内容 -->
       <!-- 1 本地相册选择图片 -->
       <!-- 2 拍照 -->
-       <van-cell is-link title="本地相册选择图片"></van-cell>
+       <van-cell @click="fileMsg" is-link title="本地相册选择图片"></van-cell>
        <van-cell is-link title="拍照"></van-cell>
     </van-popup>
      <!-- 昵称弹层 -->
@@ -50,12 +50,14 @@
           @cancel="showBirthDay=false"
          />
     </van-popup>
+    <!-- 放置一个input标签用来上传图片 -->
+    <input ref="myFile" @change="upload" type="file" style="display:none">
 </div>
 </template>
 
 <script>
 import dayjs from 'dayjs'
-import { getUserProfile } from '@/api/user' // 引入方法
+import { getUserProfile, updatePhoto } from '@/api/user' // 引入方法
 export default {
   data () {
     return {
@@ -104,6 +106,18 @@ export default {
     // 获取用户个人资料
     async getProfile () {
       this.user = await getUserProfile()
+    },
+    // 打开选择文件的对话框 触发点击input标签的动作
+    fileMsg () {
+      this.$refs.myFile.click()
+    },
+    // 修改头像
+    async upload (params) {
+      const data = new FormData()
+      data.append('photo', this.$refs.myFile.files[0]) // 第二个参数为 选择的图片文件
+      const result = await updatePhoto(data) // 上传头像
+      this.user.photo = result.photo // 成功上传的头像设置给当前数据
+      this.showPhoto = false // 关闭弹层
     }
   },
   created () {
