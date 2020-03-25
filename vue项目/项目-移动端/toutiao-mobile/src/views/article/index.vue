@@ -4,7 +4,7 @@
   <div class="detail">
       <h3 class="title">{{article.title}}</h3>
       <div class="author">
-        <van-image round width="1rem" height="1rem" fit="fill" src="https://img.yzcdn.cn/vant/cat.jpeg" />
+        <van-image round width="1rem" height="1rem" fit="fill" :src="article.aut_photo" />
         <div class="text">
           <p class="name">{{article.aut_name}}</p>
           <!-- 放置一个过滤器 -->
@@ -22,7 +22,7 @@
         <van-button round size="small" :class="{active: article.attitude === 0}" plain icon="delete">不喜欢</van-button>
       </div>
        <!-- 放置comment组件 到 detail内部 因为有padding-->
-      <Comment />
+      <Comment></Comment>
     </div>
     <!-- 放置一个遮罩层 -->
     <van-overlay :show="loading">
@@ -75,6 +75,9 @@ export default {
         this.$bnotify({ type: 'success', message: '关注成功' })
       } catch (error) {
         this.$bnotify({ message: '操作失败' })
+      } finally {
+        //  不论你写的执行 是成功的还是失败的  不论是走 try  catch 最终都会进入 finally
+        this.followLoading = false // 关闭加载状态
       }
     }
   },
