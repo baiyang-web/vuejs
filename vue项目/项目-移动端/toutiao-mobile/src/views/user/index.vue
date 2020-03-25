@@ -36,7 +36,7 @@
       </van-col>
     </van-row>
 
-    <van-cell-group class="user-group">
+    <van-cell-group class="user-group" style="height:80px">
       <van-cell icon="edit" title="编辑资料" to="/user/profile" is-link />
       <van-cell icon="chat-o" title="小智同学" to="/user/chat" is-link />
       <van-cell icon="setting-o" title="系统设置" is-link />
