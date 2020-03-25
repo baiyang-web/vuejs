@@ -36,7 +36,7 @@
       </van-col>
     </van-row>
 
-    <van-cell-group class="user-group" style="height:80px">
+    <van-cell-group class="user-group">
       <van-cell icon="edit" title="编辑资料" to="/user/profile" is-link />
       <van-cell icon="chat-o" title="小智同学" to="/user/chat" is-link />
       <van-cell icon="setting-o" title="系统设置" is-link />
@@ -51,6 +51,50 @@ export default {
 }
 </script>
 
-<style>
-
+<style lang="less" scoped>
+.user {
+  &-profile {
+    width: 100%;
+    height: 150px;
+    display: block;
+    background: #3296fa;
+    color: #fff;
+    .info {
+      display: flex;
+      padding: 20px;
+      align-items: center;
+      .van-image{
+        width: 64px;
+        height: 64px;
+      }
+      .name {
+        font-size: 16px;
+        font-weight: normal;
+        margin-left: 10px;
+      }
+      .van-tag {
+        background: #fff;
+        color: #3296fa;
+      }
+    }
+    p{
+      margin: 0;
+      text-align: center;
+    }
+  }
+  &-group {
+    margin-bottom: 15px;
+  }
+  &-links {
+    padding: 15px 0;
+    font-size: 12px;
+    text-align: center;
+    background-color: #fff;
+    .van-icon {
+      display: block;
+      font-size: 24px;
+      padding-bottom: 5px;
+    }
+  }
+}
 </style>
