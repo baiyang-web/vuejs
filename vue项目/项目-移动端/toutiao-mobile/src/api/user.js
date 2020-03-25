@@ -27,3 +27,10 @@ export function unfollowUser (autid) {
     method: 'delete'
   })
 }
+
+// 获取用户个人信息 粉丝数
+export function getUserInfo () {
+  return request({
+    url: '/user'
+  })
+}
