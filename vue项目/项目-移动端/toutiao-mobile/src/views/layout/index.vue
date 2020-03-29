@@ -5,7 +5,10 @@
    <van-nav-bar @click-right="$router.push('/search')" title="头条" right-text="搜索" fixed v-if="$route.path !== '/user'"></van-nav-bar>
 <!-- 判断当前的地址 如果是 /user 就给一个 noTop类名 -->
     <div class="my-wrapper" :class="{noTop: $route.path === '/user'}">
+    <!-- 使用keep-alive组件包裹 一旦被包裹 路由容器里的组件就不会被销毁 -->
+    <keep-alive>
      <router-view></router-view>
+    </keep-alive>
     </div>
     <!-- 放置标签栏组件 -->
     <!-- route表示开启路由模式 pc端为router -->

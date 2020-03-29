@@ -1,31 +1,84 @@
 <template>
   <div class="container">
- <van-nav-bar @click-left="$router.back()" title="小智同学" left-arrow></van-nav-bar>
- <div class="chat-list">
-      <div class="chat-item left">
-        <van-image fit="cover" round src="https://img.yzcdn.cn/vant/cat.jpeg" />
-        <div class="chat-pao">ewqewq</div>
-      </div>
-      <div class="chat-item right">
-        <div class="chat-pao">ewqewq</div>
-        <van-image  fit="cover" round src="https://img.yzcdn.cn/vant/cat.jpeg" />
+   <van-nav-bar @click-left="$router.back()" title="小智同学" left-arrow fixed></van-nav-bar>
+   <div class="chat-list" ref="myList">
+      <div class="chat-item" :class="{left: item.name === 'xztx', right: item.name !== 'xztx'}" v-for="(item,index) in list" :key="index">
+        <!-- 如果是小智说的 头像应该在左边 -->
+        <van-image v-if="item.name === 'xztx'" fit="cover" round :src="xz" />
+        <div class="chat-pao">{{item.msg}}</div>
+        <!-- 如果不等于小智 头像右边 -->
+        <van-image  v-if="item.name !== 'xztx'" fit="cover" round :src="photo" />
       </div>
     </div>
     <div class="reply-container van-hairline--top">
-      <van-field v-model="value" placeholder="说点什么...">
+      <van-field v-model.trim="value" placeholder="说点什么...">
         <van-loading v-if="loading" slot="button" type="spinner" size="16px"></van-loading>
-        <span v-else @click="send()" slot="button" style="font-size:12px;color:#999">提交</span>
+        <span v-else @click="send" slot="button" style="font-size:12px;color:#999">提交</span>
       </van-field>
     </div>
 </div>
 </template>
 
 <script>
+import Vue from 'vue'
+import xz from '@/assets/xz.jpg' // 引入一张图片
+import { mapState } from 'vuex'
+import io from 'socket.io-client' // 引入socke.io
 export default {
   data () {
     return {
       value: '',
-      loading: false
+      loading: false,
+      xz, // 赋值图片地址
+      list: [] // 存储聊天记录
+    }
+  },
+  computed: {
+    ...mapState(['photo', 'user']) // 引入变量
+  },
+  // 初始化钩子函数
+  created () {
+    this.socket = io('http://ttapi.research.itcast.cn', {
+      query: {
+        token: this.user.token
+      }
+    })
+    this.socket.on('connect', () => {
+      this.list.push({ msg: '你好!', name: 'xztx' }) // 加name是为了区分这句话是谁说的
+    })
+    // 这里监听回复消息
+    this.socket.on('message', data => {
+      this.list.push({ ...data, name: 'xztx' }) // 添加到列表中
+      this.scrollBottom() // 接收消息之后
+    })
+  },
+  methods: {
+    // 发送消息方法
+    async send () {
+      if (!this.value) return false
+      this.loading = true // 打开显示状态
+      await this.$bsleep(500) // 休眠函数
+      const obj = {
+        msg: this.value, // 输入的内容
+        timestamp: Date.now() // 给个事件戳
+      }
+      this.socket.emit('message', obj) // 发送消息
+      this.list.push(obj)
+      this.value = ''
+      this.loading = false
+      this.scrollBottom() // 发送消息之后
+    },
+    // 定义一个将内容滚动到底部的方法
+    scrollBottom () {
+    //  this.$nextTick => Vue的API方法 => 表示 会在数据 更新之后 并且完成了渲染之后执行
+    // 这里采用组件实例的方法
+      Vue.nextTick(() => {
+        this.$refs.myList.scrollTop = this.$refs.myList.scrollHeight // 将滚动条滚动到最底部
+      })
+    },
+    // 在页面销毁之前触发
+    beforeDestroy () {
+      this.socket.close() // 直接关闭连接
     }
   }
 }

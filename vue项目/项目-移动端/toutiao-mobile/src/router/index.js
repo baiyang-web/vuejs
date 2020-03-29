@@ -23,7 +23,9 @@ const routes = [
     component: Layout, // 布局一级路由
     children: [{
       path: '', // 如果path什么都不写 默认就是二级路由的默认组件
-      component: home
+      component: home,
+      // meta是固定写法
+      meta: { isAlive: true } // 是否缓存组件实例 路由元信息
     }, {
       path: '/question',
       component: question // 问答组件

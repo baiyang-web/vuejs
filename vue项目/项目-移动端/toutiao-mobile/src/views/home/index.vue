@@ -1,7 +1,7 @@
 <template>
   <div class="container">
   <!-- 放置tabs组件 -->
-   <van-tabs v-model="activeIndex">
+   <van-tabs v-model="activeIndex" @change="changeTab">
   <van-tab :title="item.name" v-for="item in channels" :key="item.id">
   <!-- 封装一个article-list组件 -->
       <article-list :channel_id="item.id" @showAction="openAction"></article-list>
@@ -148,6 +148,11 @@ export default {
     async addChannel (channel) {
       await addChannel(channel) // 传入参数 写入缓存
       this.channels.push(channel) // 从后添加数据
+    },
+    // 切换页签事件
+    changeTab () {
+      // 广播中传出一个参数 传当前谁被激活了 传出当前激活索引的id 传出去article-list组件需要进行监听
+      eventbus.$emit('changeTab', this.channels[this.activeIndex].id)
     }
   },
   created () {
